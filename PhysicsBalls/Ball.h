@@ -28,9 +28,8 @@ public:
 	Ball();
 	~Ball();
 
-
-
 };
+
 
 
 #endif // !BALL_H
