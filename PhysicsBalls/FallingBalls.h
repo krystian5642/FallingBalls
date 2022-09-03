@@ -1,12 +1,7 @@
 #ifndef FALLING_BALLS
 #define FALLING_BALLS
 
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include "Ball.h"
 
 class FallingBalls
 {
@@ -19,7 +14,7 @@ private:
 	double gravity;
 	double dt;
 	float groundHeight;
-	//std::vector<Ball> Balls;
+	std::vector<Ball> Balls;
 
 	//functions
 	void initWindow();
