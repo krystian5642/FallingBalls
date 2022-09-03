@@ -23,10 +23,43 @@ private:
 	sf::Vector2f accelerationVector;
 	sf::Vector2f currentSpeedVector;
 
+    //private getters and setters
+    void setTotalEnergy(float newTotalEnergy);
+    void setKineticEnergy(float newKineticEnergy);
+    void setPotentialEnergy(float newPotentialEnergy);
+
 public:
-	//constructor and destructor
-	Ball();
+	//constructors and destructor
+	Ball(float radius,float mass);
 	~Ball();
+
+	//getters and setters
+    float getMass() const;
+    void setMass(float newMass);
+
+    float getDensity() const;
+    void setDensity(float newDensity);
+
+    float getVolume() const;
+    void setVolume(float newVolume);
+
+    float getTotalEnergy() const;
+
+    float getKineticEnergy() const;
+
+    float getPotentialEnergy() const;
+
+    float getCurrentSpeed() const;
+    void setCurrentSpeed(float newCurrentSpeed);
+
+    float getHeight() const;
+    void setHeight(float newHeight);
+
+    const sf::Vector2f& getAccelerationVector() const;
+    void setAccelerationVector(const sf::Vector2f& newAccelerationVector);
+
+    const sf::Vector2f& getCurrentSpeedVector() const;
+    void setCurrentSpeedVector(const sf::Vector2f& newCurrentSpeedVector);
 
 };
 
