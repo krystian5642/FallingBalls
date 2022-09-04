@@ -1,103 +1,98 @@
 #include "Ball.h"
 
-Ball::Ball(float radius, float mass) : sf::CircleShape(radius)
+Ball::Ball(double radius, double mass,sf::Vector2f initialVelocity) : sf::CircleShape(radius)
 {
-	
+	setMass(mass);
+	setVolume(4.f/3.f*M_PI*pow(radius,3));
+	setDensity(mass/volume);
+	setOrigin(radius,radius);
+	currentSpeed = pow(pow(initialVelocity.x,2) + pow(initialVelocity.y, 2),1.f / 2.f);
+	currentSpeedVector = initialVelocity;
+	kineticEnergy = mass * pow(currentSpeed, 2) / 2;
+	totalEnergy = kineticEnergy;
 }
 
 Ball::~Ball()
 {
 }
 
-float Ball::getMass() const
+double Ball::getMass() const
 {
 	return mass;
 }
 
-void Ball::setMass(float newMass)
+void Ball::setMass(double newMass)
 {
 	mass = newMass;
 	density = mass / volume;
 }
 
-float Ball::getDensity() const
+double Ball::getDensity() const
 {
 	return density;
 }
 
-void Ball::setDensity(float newDensity)
+void Ball::setDensity(double newDensity)
 {
 	density = newDensity;
 	mass = density * volume;
 }
 
-float Ball::getVolume() const
+double Ball::getVolume() const
 {
 	return volume;
 }
 
-void Ball::setVolume(float newVolume)
+void Ball::setVolume(double newVolume)
 {
 	volume = newVolume;
+	setRadius(pow(3.f/4.f * volume/M_PI, 1.f/3.f));
 	density = mass / volume;
 }
 
-float Ball::getTotalEnergy() const
+//energy getters and setters
+double Ball::getTotalEnergy() const
 {
 	return totalEnergy;
 }
 
-void Ball::setTotalEnergy(float newTotalEnergy)
-{
-	totalEnergy = newTotalEnergy;
-}
-
-float Ball::getKineticEnergy() const
+double Ball::getKineticEnergy() const
 {
 	return kineticEnergy;
 }
 
-void Ball::setKineticEnergy(float newKineticEnergy)
-{
-	kineticEnergy = newKineticEnergy;
-}
-
-float Ball::getPotentialEnergy() const
+double Ball::getPotentialEnergy() const
 {
 	return potentialEnergy;
 }
 
-void Ball::setPotentialEnergy(float newPotentialEnergy)
-{
-}
-
-float Ball::getCurrentSpeed() const
+double Ball::getCurrentSpeed() const
 {
 	return currentSpeed;
 }
 
-void Ball::setCurrentSpeed(float newCurrentSpeed)
+void Ball::setCurrentSpeed(double newCurrentSpeed)
 {
 	currentSpeed = newCurrentSpeed;
+	kineticEnergy = mass * currentSpeed * currentSpeed / 2;
 }
 
-float Ball::getHeight() const
+void Ball::setRadius(float radius)
+{
+	sf::CircleShape::setRadius(radius);
+}
+
+double Ball::getHeight() const
 {
 	return height;
 }
 
-void Ball::setHeight(float newHeight)
+void Ball::setHeight(double newHeight,float groundHeight,float windowHeight, unsigned long long gravity)
 {
-}
-
-const sf::Vector2f& Ball::getAccelerationVector() const
-{
-	return accelerationVector;
-}
-
-void Ball::setAccelerationVector(const sf::Vector2f& newAccelerationVector)
-{
-	accelerationVector = newAccelerationVector;
+	setPosition(400/*getPosition().x*/, windowHeight - groundHeight - newHeight);
+	totalEnergy -= potentialEnergy;
+	potentialEnergy = mass * gravity * height;
+	totalEnergy += potentialEnergy;
 }
 
 const sf::Vector2f& Ball::getCurrentSpeedVector() const
@@ -105,7 +100,14 @@ const sf::Vector2f& Ball::getCurrentSpeedVector() const
 	return currentSpeedVector;
 }
 
-void Ball::setCurrentSpeedVector(const sf::Vector2f& newCurrentSpeedVector)
+//update function
+void Ball::updateFallingBall(long double dt, unsigned long long gravity)
 {
-	currentSpeedVector = newCurrentSpeedVector;
+	//update energy , height and other thing
+	setPosition(getPosition().x, getPosition().y + currentSpeedVector.y *dt + gravity * pow(dt,2)/2);
+	currentSpeedVector = sf::Vector2f(0, currentSpeedVector.y + gravity * dt);
+	if (getPosition().y + getRadius() > 730)
+	{
+		currentSpeedVector = -currentSpeedVector;
+	}
 }

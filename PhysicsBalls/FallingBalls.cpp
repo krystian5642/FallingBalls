@@ -34,15 +34,19 @@ void FallingBalls::initGround()
 
 void FallingBalls::initBalls(const size_t& ballNumber)
 {
+    Ball ball(30,40);
+    ball.setHeight(700,groundHeight,window->getSize().y);
+    ball.setFillColor(sf::Color::Red);
+    Balls.push_back(ball);
 }
 
-FallingBalls::FallingBalls(size_t ballNumber, double gravity)
+FallingBalls::FallingBalls(size_t ballNumber, unsigned long long gravity)
 {
     initWindow();
     initGround();
-    initBalls(ballNumber);
     updateDt();
     setGravity(gravity);   
+    initBalls(ballNumber);
 }
 
 FallingBalls::~FallingBalls()
@@ -54,7 +58,7 @@ double FallingBalls::getGravity() const
 	return gravity;
 }
 
-void FallingBalls::setGravity(double newGravity)
+void FallingBalls::setGravity(unsigned long long newGravity)
 {
 	gravity = newGravity;
 }
@@ -81,13 +85,21 @@ void FallingBalls::updateDt()
 
 void FallingBalls::update()
 {
+    //updateDt
+    updateDt();
+
     //update ground
     if (ground.getSize().y != groundHeight)
     {
         ground.setSize(sf::Vector2f(ground.getSize().x,groundHeight));
         ground.setPosition(sf::Vector2f(0, window->getSize().y - groundHeight));
     }
+
     //update balls
+    for (auto& ball : Balls)
+    {
+        ball.updateFallingBall(dt,gravity);
+    }
 }
 
 void FallingBalls::render()
@@ -97,6 +109,10 @@ void FallingBalls::render()
 
     //render stuff
     window->draw(ground);
+    for (auto& ball : Balls)
+    {
+        window->draw(ball);
+    }
 
     //display stuff
     window->display();
