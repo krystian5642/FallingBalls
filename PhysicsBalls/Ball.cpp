@@ -1,12 +1,14 @@
 #include "Ball.h"
 
-Ball::Ball(double radius, double mass,sf::Vector2f initialVelocity) : sf::CircleShape(radius)
+extern sf::Vector2u windowSize;
+
+Ball::Ball(double radius, unsigned mass, sf::Vector2<long double> initialVelocity) : sf::CircleShape(radius)
 {
-	setMass(mass);
-	setVolume(4.f/3.f*M_PI*pow(radius,3));
-	setDensity(mass/volume);
+	this->mass = mass;
+	this->volume = 4.f / 3.f * M_PI * pow(radius, 3);
+	this->density = this->mass / this->volume;
 	setOrigin(radius,radius);
-	currentSpeed = pow(pow(initialVelocity.x,2) + pow(initialVelocity.y, 2),1.f / 2.f);
+	currentSpeed = sqrt(pow(initialVelocity.x,2) + pow(initialVelocity.y, 2));
 	currentSpeedVector = initialVelocity;
 	kineticEnergy = mass * pow(currentSpeed, 2) / 2;
 	totalEnergy = kineticEnergy;
@@ -16,57 +18,58 @@ Ball::~Ball()
 {
 }
 
-double Ball::getMass() const
+unsigned Ball::getMass() const
 {
 	return mass;
 }
 
-void Ball::setMass(double newMass)
+void Ball::setMass(unsigned newMass)
 {
 	mass = newMass;
 	density = mass / volume;
 }
 
-double Ball::getDensity() const
+unsigned Ball::getDensity() const
 {
 	return density;
 }
 
-void Ball::setDensity(double newDensity)
+void Ball::setDensity(unsigned newDensity)
 {
 	density = newDensity;
 	mass = density * volume;
 }
 
-double Ball::getVolume() const
+unsigned Ball::getVolume() const
 {
 	return volume;
 }
 
-void Ball::setVolume(double newVolume)
+void Ball::setVolume(unsigned newVolume)
 {
 	volume = newVolume;
-	setRadius(pow(3.f/4.f * volume/M_PI, 1.f/3.f));
+	setRadius(pow(3.f/4.f * (unsigned)volume/M_PI, 1.f/3.f));
 	density = mass / volume;
 }
 
 //energy getters and setters
-double Ball::getTotalEnergy() const
+unsigned long Ball::getTotalEnergy() const
 {
 	return totalEnergy;
 }
 
-double Ball::getKineticEnergy() const
+unsigned long Ball::getKineticEnergy() const
 {
+	std::cout << "sdsdsd" << std::endl;
 	return kineticEnergy;
 }
 
-double Ball::getPotentialEnergy() const
+unsigned long Ball::getPotentialEnergy() const
 {
 	return potentialEnergy;
 }
 
-double Ball::getCurrentSpeed() const
+long double Ball::getCurrentSpeed() const
 {
 	return currentSpeed;
 }
@@ -82,32 +85,49 @@ void Ball::setRadius(float radius)
 	sf::CircleShape::setRadius(radius);
 }
 
-double Ball::getHeight() const
+float Ball::getHeight() const
 {
 	return height;
 }
 
-void Ball::setHeight(double newHeight,float groundHeight,float windowHeight, unsigned long long gravity)
-{
-	setPosition(400/*getPosition().x*/, windowHeight - groundHeight - newHeight);
-	totalEnergy -= potentialEnergy;
-	potentialEnergy = mass * gravity * height;
-	totalEnergy += potentialEnergy;
-}
-
-const sf::Vector2f& Ball::getCurrentSpeedVector() const
+const sf::Vector2<long double>& Ball::getCurrentSpeedVector() const
 {
 	return currentSpeedVector;
 }
 
+void Ball::setPosition(float x, float height, const sf::RectangleShape& ground,long double gravity)
+{
+	setPosition(sf::Vector2f(x, height), ground,gravity);
+}
+
+void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,long double gravity)
+{
+	sf::Vector2f positionOnMap = sf::Vector2f(position.x, windowSize.y - ground.getSize().y - position.y);
+	sf::CircleShape::setPosition(positionOnMap);
+}
+
 //update function
-void Ball::updateFallingBall(long double dt, unsigned long long gravity)
+void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, long double gravity)
 {
 	//update energy , height and other thing
-	setPosition(getPosition().x, getPosition().y + currentSpeedVector.y *dt + gravity * pow(dt,2)/2);
-	currentSpeedVector = sf::Vector2f(0, currentSpeedVector.y + gravity * dt);
-	if (getPosition().y + getRadius() > 730)
+	move(0, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
+	height = windowSize.y - ground.getSize().y -getPosition().y - getRadius();
+	currentSpeedVector = sf::Vector2<long double>(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
+	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
+	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y)
 	{
 		currentSpeedVector = -currentSpeedVector;
 	}
+	totalEnergy = 0;
+	if (mass * gravity * height < 0)
+	{
+		potentialEnergy = 0;
+	}
+	else
+	{
+		potentialEnergy = mass * gravity * height;
+	}	
+	kineticEnergy = mass * pow(currentSpeed, 2)/2;
+	totalEnergy = potentialEnergy + kineticEnergy;
+	std::cout << potentialEnergy << "  " << kineticEnergy << std::endl;
 }

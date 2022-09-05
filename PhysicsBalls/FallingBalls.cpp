@@ -1,7 +1,10 @@
-#include "FallingBalls.h"
+#include "FallingBalls.h" 
+
+sf::Vector2u windowSize;
 
 void FallingBalls::initWindow()
 {
+    srand(time(NULL));
     std::ifstream ifs("Config\\window.ini");
     std::string window_title = "None";
     sf::VideoMode window_bounds(800, 600, 32);
@@ -22,31 +25,23 @@ void FallingBalls::initWindow()
     window = std::make_unique<sf::RenderWindow>(window_bounds, window_title);
     window->setFramerateLimit(framerate_limit);
     window->setVerticalSyncEnabled(vertical_sync_enabled);
+    windowSize = window->getSize();
 }
 
 void FallingBalls::initGround()
 {
-    groundHeight = 70;
-    ground.setSize(sf::Vector2f(window->getSize().x, window->getSize().y - groundHeight));
-    ground.setPosition(sf::Vector2f(0, window->getSize().y - groundHeight));
+    ground.setSize(sf::Vector2f(window->getSize().x,70));
+    ground.setPosition(sf::Vector2f(0, window->getSize().y - 70));
     ground.setFillColor(sf::Color::Black);
 }
 
-void FallingBalls::initBalls(const size_t& ballNumber)
-{
-    Ball ball(30,40);
-    ball.setHeight(700,groundHeight,window->getSize().y);
-    ball.setFillColor(sf::Color::Red);
-    Balls.push_back(ball);
-}
-
-FallingBalls::FallingBalls(size_t ballNumber, unsigned long long gravity)
+FallingBalls::FallingBalls(long double gravity)
 {
     initWindow();
+    //it sets deafult ground
     initGround();
     updateDt();
     setGravity(gravity);   
-    initBalls(ballNumber);
 }
 
 FallingBalls::~FallingBalls()
@@ -58,7 +53,7 @@ double FallingBalls::getGravity() const
 	return gravity;
 }
 
-void FallingBalls::setGravity(unsigned long long newGravity)
+void FallingBalls::setGravity(long double newGravity)
 {
 	gravity = newGravity;
 }
@@ -68,14 +63,14 @@ size_t FallingBalls::getBallNumber() const
     return 0;
 }
 
-float FallingBalls::getGroundHeight() const
+const sf::RectangleShape& FallingBalls::getGround() const
 {
-    return groundHeight;
+    return ground;
 }
 
-void FallingBalls::setGroundHeight(float newGroundHeight)
+void FallingBalls::setGround(const sf::RectangleShape& newGround)
 {
-    groundHeight = newGroundHeight;
+    ground = newGround;
 }
 
 void FallingBalls::updateDt()
@@ -88,17 +83,10 @@ void FallingBalls::update()
     //updateDt
     updateDt();
 
-    //update ground
-    if (ground.getSize().y != groundHeight)
-    {
-        ground.setSize(sf::Vector2f(ground.getSize().x,groundHeight));
-        ground.setPosition(sf::Vector2f(0, window->getSize().y - groundHeight));
-    }
-
     //update balls
     for (auto& ball : Balls)
     {
-        ball.updateFallingBall(dt,gravity);
+        ball.updateFallingBall(dt,ground,gravity);
     }
 }
 
@@ -116,6 +104,16 @@ void FallingBalls::render()
 
     //display stuff
     window->display();
+}
+
+void FallingBalls::addBall(const Ball& newBall)
+{
+    Balls.push_back(newBall);
+}
+
+void FallingBalls::deleteBall(auto& ball)
+{
+    Balls.erase(ball);
 }
 
 void FallingBalls::startAnimation()
