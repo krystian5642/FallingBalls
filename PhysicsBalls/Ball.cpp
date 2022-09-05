@@ -12,6 +12,7 @@ Ball::Ball(double radius, unsigned mass, sf::Vector2<long double> initialVelocit
 	currentSpeedVector = initialVelocity;
 	kineticEnergy = mass * pow(currentSpeed, 2) / 2;
 	totalEnergy = kineticEnergy;
+	currentSpeedVector.x = 100;
 }
 
 Ball::~Ball()
@@ -53,7 +54,7 @@ void Ball::setVolume(unsigned newVolume)
 }
 
 //energy getters and setters
-unsigned long Ball::getTotalEnergy() const
+int Ball::getTotalEnergy() const
 {
 	return totalEnergy;
 }
@@ -64,7 +65,7 @@ unsigned long Ball::getKineticEnergy() const
 	return kineticEnergy;
 }
 
-unsigned long Ball::getPotentialEnergy() const
+int Ball::getPotentialEnergy() const
 {
 	return potentialEnergy;
 }
@@ -110,24 +111,20 @@ void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& g
 void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, long double gravity)
 {
 	//update energy , height and other thing
-	move(0, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
+	move(currentSpeedVector.x*dt, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
 	height = windowSize.y - ground.getSize().y -getPosition().y - getRadius();
 	currentSpeedVector = sf::Vector2<long double>(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
 	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
 	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y)
 	{
-		currentSpeedVector = -currentSpeedVector;
+		currentSpeedVector.y = -currentSpeedVector.y;
+	}
+	if (getPosition().x + getRadius() > windowSize.x || getPosition().x - getRadius() < 0 )
+	{
+		currentSpeedVector.x = -currentSpeedVector.x;
 	}
 	totalEnergy = 0;
-	if (mass * gravity * height < 0)
-	{
-		potentialEnergy = 0;
-	}
-	else
-	{
-		potentialEnergy = mass * gravity * height;
-	}	
+    potentialEnergy = mass * gravity * height;	
 	kineticEnergy = mass * pow(currentSpeed, 2)/2;
 	totalEnergy = potentialEnergy + kineticEnergy;
-	std::cout << potentialEnergy << "  " << kineticEnergy << std::endl;
 }

@@ -21,9 +21,9 @@ private:
 	unsigned mass;                 // kg
     unsigned density;              // kg/m^3 
     unsigned volume;               // m^3
-    unsigned long totalEnergy;          // J
+    int totalEnergy;          // J
     unsigned long kineticEnergy;        // J
-    unsigned long potentialEnergy;      // J
+    int potentialEnergy;      // J
     long double currentSpeed;    // m/s px/s
 	float height;                // m
 	sf::Vector2<long double> currentSpeedVector;
@@ -52,9 +52,9 @@ public:
     void setVolume(unsigned newVolume);
 
     //energy getters and setters
-    unsigned long getTotalEnergy() const;
+    int getTotalEnergy() const;
     unsigned long getKineticEnergy() const;
-    unsigned long getPotentialEnergy() const;
+    int getPotentialEnergy() const;
 
     long double getCurrentSpeed() const;
 
