@@ -18,15 +18,16 @@ class Ball : public sf::CircleShape
 {
 private:
 	//variables
-	unsigned mass;                 // kg
-    unsigned density;              // kg/m^3 
-    unsigned volume;               // m^3
-    int totalEnergy;          // J
-    unsigned long kineticEnergy;        // J
-    int potentialEnergy;      // J
-    long double currentSpeed;    // m/s px/s
+	float mass;                 // kg
+    float density;              // kg/m^3 
+    float volume;               // m^3
+    float totalEnergy;               // J
+    float kineticEnergy;   // J
+    float potentialEnergy;           // J
+
+    double currentSpeed;    // m/s px/s
 	float height;                // m
-	sf::Vector2<long double> currentSpeedVector;
+	sf::Vector2f currentSpeedVector;
 
     //setters
     void setCurrentSpeed(double newCurrentSpeed);
@@ -34,41 +35,41 @@ private:
 
 public:
 	//constructors and destructor
-	Ball(double radius, unsigned mass, 
-        sf::Vector2<long double> = sf::Vector2<long double>(0,0));
+	Ball(double radius, float mass, 
+        sf::Vector2f = sf::Vector2f(0,0));
 	virtual ~Ball();
 
 	//getters and setters
-    unsigned getMass() const;
+    float getMass() const;
     //we set new mass here, radius doesn't change , density changes,too 
-    void setMass(unsigned newMass);
+    void setMass(float newMass);
 
-    unsigned getDensity() const;
+    float getDensity() const;
     //we set new density here, radius doesn't change , mass changes
-    void setDensity(unsigned newDensity);
+    void setDensity(float newDensity);
 
-    unsigned getVolume() const;
+    float getVolume() const;
     //we set new volume here, radius changes , density changes ,mass doesn't change
-    void setVolume(unsigned newVolume);
+    void setVolume(float newVolume);
 
     //energy getters and setters
-    int getTotalEnergy() const;
-    unsigned long getKineticEnergy() const;
-    int getPotentialEnergy() const;
+    float getTotalEnergy() const;
+    float getKineticEnergy() const;
+    float getPotentialEnergy() const;
 
-    long double getCurrentSpeed() const;
+    double getCurrentSpeed() const;
 
     float getHeight() const;
 
-    const sf::Vector2<long double>& getCurrentSpeedVector() const;
+    const sf::Vector2f& getCurrentSpeedVector() const;
 
-    void setPosition(float x, float height, const sf::RectangleShape& ground,long double gravity);
-    void setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,long double gravity);
+    void setPosition(float x, float height, const sf::RectangleShape& ground,double gravity);
+    void setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,double gravity);
 
     //update function
     void updateFallingBall(long double dt,
         const sf::RectangleShape& ground, 
-        long double gravity = 9.81);
+        double gravity = 9.81);
 
     //These functions are deleted because we set the position above the ground and potential energy changes, too
     void setPosition(float x, float y) = delete;

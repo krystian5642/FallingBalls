@@ -2,7 +2,7 @@
 
 extern sf::Vector2u windowSize;
 
-Ball::Ball(double radius, unsigned mass, sf::Vector2<long double> initialVelocity) : sf::CircleShape(radius)
+Ball::Ball(double radius, float mass, sf::Vector2f initialVelocity) : sf::CircleShape(radius)
 {
 	this->mass = mass;
 	this->volume = 4.f / 3.f * M_PI * pow(radius, 3);
@@ -12,41 +12,40 @@ Ball::Ball(double radius, unsigned mass, sf::Vector2<long double> initialVelocit
 	currentSpeedVector = initialVelocity;
 	kineticEnergy = mass * pow(currentSpeed, 2) / 2;
 	totalEnergy = kineticEnergy;
-	currentSpeedVector.x = 100;
 }
 
 Ball::~Ball()
 {
 }
 
-unsigned Ball::getMass() const
+float Ball::getMass() const
 {
 	return mass;
 }
 
-void Ball::setMass(unsigned newMass)
+void Ball::setMass(float newMass)
 {
 	mass = newMass;
 	density = mass / volume;
 }
 
-unsigned Ball::getDensity() const
+float Ball::getDensity() const
 {
 	return density;
 }
 
-void Ball::setDensity(unsigned newDensity)
+void Ball::setDensity(float newDensity)
 {
 	density = newDensity;
 	mass = density * volume;
 }
 
-unsigned Ball::getVolume() const
+float Ball::getVolume() const
 {
 	return volume;
 }
 
-void Ball::setVolume(unsigned newVolume)
+void Ball::setVolume(float newVolume)
 {
 	volume = newVolume;
 	setRadius(pow(3.f/4.f * (unsigned)volume/M_PI, 1.f/3.f));
@@ -54,23 +53,22 @@ void Ball::setVolume(unsigned newVolume)
 }
 
 //energy getters and setters
-int Ball::getTotalEnergy() const
+float Ball::getTotalEnergy() const
 {
 	return totalEnergy;
 }
 
-unsigned long Ball::getKineticEnergy() const
+float Ball::getKineticEnergy() const
 {
-	std::cout << "sdsdsd" << std::endl;
 	return kineticEnergy;
 }
 
-int Ball::getPotentialEnergy() const
+float Ball::getPotentialEnergy() const
 {
 	return potentialEnergy;
 }
 
-long double Ball::getCurrentSpeed() const
+double Ball::getCurrentSpeed() const
 {
 	return currentSpeed;
 }
@@ -91,37 +89,45 @@ float Ball::getHeight() const
 	return height;
 }
 
-const sf::Vector2<long double>& Ball::getCurrentSpeedVector() const
+const sf::Vector2f& Ball::getCurrentSpeedVector() const
 {
 	return currentSpeedVector;
 }
 
-void Ball::setPosition(float x, float height, const sf::RectangleShape& ground,long double gravity)
+void Ball::setPosition(float x, float height, const sf::RectangleShape& ground,double gravity)
 {
 	setPosition(sf::Vector2f(x, height), ground,gravity);
 }
 
-void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,long double gravity)
+void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,double gravity)
 {
-	sf::Vector2f positionOnMap = sf::Vector2f(position.x, windowSize.y - ground.getSize().y - position.y);
+	height = windowSize.y - ground.getSize().y - position.y;
+	sf::Vector2f positionOnMap = sf::Vector2f(position.x, height);
 	sf::CircleShape::setPosition(positionOnMap);
+	potentialEnergy = mass * gravity * height;
+	totalEnergy += potentialEnergy;
 }
 
 //update function
-void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, long double gravity)
+void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, double gravity)
 {
 	//update energy , height and other thing
 	move(currentSpeedVector.x*dt, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
-	height = windowSize.y - ground.getSize().y -getPosition().y - getRadius();
-	currentSpeedVector = sf::Vector2<long double>(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
+	height = windowSize.y - ground.getSize().y -getPosition().y;
+	currentSpeedVector = sf::Vector2f(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
 	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
-	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y)
+	float coefficientOfFriction = 0.5;
+	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y && currentSpeedVector.y > 0 
+		|| getPosition().y - getRadius() < 0 && currentSpeedVector.y < 0)
 	{
-		currentSpeedVector.y = -currentSpeedVector.y;
+		currentSpeedVector.x = (1-coefficientOfFriction) * currentSpeedVector.x;
+		currentSpeedVector.y = -(1-coefficientOfFriction) * currentSpeedVector.y;
 	}
-	if (getPosition().x + getRadius() > windowSize.x || getPosition().x - getRadius() < 0 )
+	if (getPosition().x + getRadius() > windowSize.x && currentSpeedVector.x > 0 
+		|| getPosition().x - getRadius() < 0 && currentSpeedVector.x < 0)
 	{
-		currentSpeedVector.x = -currentSpeedVector.x;
+		currentSpeedVector.y = (1 - coefficientOfFriction) * currentSpeedVector.y;
+		currentSpeedVector.x = -(1 - coefficientOfFriction) * currentSpeedVector.x;
 	}
 	totalEnergy = 0;
     potentialEnergy = mass * gravity * height;	

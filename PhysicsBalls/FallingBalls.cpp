@@ -35,7 +35,7 @@ void FallingBalls::initGround()
     ground.setFillColor(sf::Color::Black);
 }
 
-FallingBalls::FallingBalls(long double gravity)
+FallingBalls::FallingBalls(double gravity)
 {
     initWindow();
     //it sets deafult ground
@@ -53,7 +53,7 @@ double FallingBalls::getGravity() const
 	return gravity;
 }
 
-void FallingBalls::setGravity(long double newGravity)
+void FallingBalls::setGravity(double newGravity)
 {
 	gravity = newGravity;
 }

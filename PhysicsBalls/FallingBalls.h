@@ -11,7 +11,7 @@ private:
 	sf::RectangleShape ground;
 	sf::Clock animationClock;
 	sf::Event event;
-	long double gravity;
+	double gravity;
 	long double dt;
 	std::vector<Ball> Balls;
 
@@ -21,12 +21,12 @@ private:
 
 public:
 	//constructor and destructor
-	FallingBalls(long double gravity = 9.81);
+	FallingBalls(double gravity = 9.81);
 	~FallingBalls();
 
 	//getters and setters
 	double getGravity() const;
-	void setGravity(long double newGravity);
+	void setGravity(double newGravity);
 
 	size_t getBallNumber() const;
 
