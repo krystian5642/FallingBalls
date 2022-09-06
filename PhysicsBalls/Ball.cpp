@@ -94,6 +94,11 @@ const sf::Vector2f& Ball::getCurrentSpeedVector() const
 	return currentSpeedVector;
 }
 
+void Ball::setCurrentSpeedVector(sf::Vector2f& newCurrentSpeedVector)
+{
+	currentSpeedVector = newCurrentSpeedVector;
+}
+
 void Ball::setPosition(float x, float height, const sf::RectangleShape& ground,double gravity)
 {
 	setPosition(sf::Vector2f(x, height), ground,gravity);
@@ -116,7 +121,7 @@ void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, d
 	height = windowSize.y - ground.getSize().y -getPosition().y;
 	currentSpeedVector = sf::Vector2f(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
 	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
-	float coefficientOfFriction = 0.5;
+	float coefficientOfFriction = 0;
 	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y && currentSpeedVector.y > 0 
 		|| getPosition().y - getRadius() < 0 && currentSpeedVector.y < 0)
 	{
@@ -133,4 +138,55 @@ void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, d
     potentialEnergy = mass * gravity * height;	
 	kineticEnergy = mass * pow(currentSpeed, 2)/2;
 	totalEnergy = potentialEnergy + kineticEnergy;
+}
+
+void setSpeedAfterCollision(std::vector<Ball>::iterator firstBall, std::vector<Ball>::iterator secondBall)
+{
+	//Phi is the contact angle
+	float distance = sqrt(pow(firstBall->getPosition().x - secondBall->getPosition().x, 2)
+		+ pow(firstBall->getPosition().y - secondBall->getPosition().y, 2));
+
+	double sinPhi = (firstBall->getPosition().y - secondBall->getPosition().y) / distance;
+	double cosPhi = (firstBall->getPosition().x - secondBall->getPosition().x) / distance;
+
+	//current speed vectors
+	const sf::Vector2f firstBallCurrentSpeedVector = firstBall->getCurrentSpeedVector();
+	const sf::Vector2f secondBallCurrentSpeedVector = secondBall->getCurrentSpeedVector();
+
+	float currentVelocity1 = sqrt(pow(firstBallCurrentSpeedVector.x,2) + pow(firstBallCurrentSpeedVector.y, 2));
+    float currentVelocity2 = sqrt(pow(secondBallCurrentSpeedVector.x, 2) + pow(secondBallCurrentSpeedVector.y, 2));
+
+	//Theta is the movement angle
+	double sinTheta1 = firstBallCurrentSpeedVector.y / currentVelocity1;
+	double cosTheta1 = firstBallCurrentSpeedVector.x / currentVelocity1;
+	double sinTheta2 = secondBallCurrentSpeedVector.y / currentVelocity1;
+	double cosTheta2 = secondBallCurrentSpeedVector.x / currentVelocity1;
+
+	//The new Vx1 adn Vy1 and the new speedVector1
+	float vx1 = (currentVelocity1 * (cosTheta1 * cosPhi + sinTheta1 * sinPhi)
+		* (firstBall->getMass() - secondBall->getMass()) + 2 * secondBall->getMass() * currentVelocity2
+			* (cosTheta2 * cosPhi + sinTheta2 * sinPhi)) * cosPhi/(firstBall->getMass() + secondBall->getMass()) 
+		- currentVelocity1 * (sinTheta1 * cosPhi - sinPhi * cosTheta1) * sinPhi;
+
+	float vy1 = (currentVelocity1 * (cosTheta1 * cosPhi + sinTheta1 * sinPhi)
+		* (firstBall->getMass() - secondBall->getMass()) + 2 * secondBall->getMass() * currentVelocity2
+		* (cosTheta2 * cosPhi + sinTheta2 * sinPhi)) * sinPhi / (firstBall->getMass() + secondBall->getMass())
+		+ currentVelocity1 * (sinTheta1 * cosPhi - sinPhi * cosTheta1) * cosPhi;
+
+	sf::Vector2f newSpeedVector1(vx1, vy1);
+	firstBall->setCurrentSpeedVector(newSpeedVector1);
+
+	//The new Vx2 adn Vy2 and the new speedVector2
+	float vx2 = (currentVelocity2 * (cosTheta2 * cosPhi + sinTheta2 * sinPhi)
+		* (secondBall->getMass() - firstBall->getMass()) + 2 * firstBall->getMass() * currentVelocity1
+		* (cosTheta1 * cosPhi + sinTheta1 * sinPhi)) * cosPhi / (firstBall->getMass() + secondBall->getMass())
+		- currentVelocity2 * (sinTheta2 * cosPhi - sinPhi * cosTheta2) * sinPhi;
+
+	float vy2 = (currentVelocity2 * (cosTheta2 * cosPhi + sinTheta2 * sinPhi)
+		* (secondBall->getMass() - firstBall->getMass()) + 2 * firstBall->getMass() * currentVelocity1
+		* (cosTheta1 * cosPhi + sinTheta1 * sinPhi)) * sinPhi / (firstBall->getMass() + secondBall->getMass())
+		+ currentVelocity2 * (sinTheta2 * cosPhi - sinPhi * cosTheta2) * cosPhi;
+
+	sf::Vector2f newSpeedVector2(vx2, vy2);
+	secondBall->setCurrentSpeedVector(newSpeedVector2);
 }

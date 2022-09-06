@@ -35,12 +35,13 @@ public:
 
 	//update and render functions
 	void updateDt();
+	void updateBallCollisions();
 	void update();
 	void render();
 
 	//add and delete function
 	void addBall(const Ball& newBall);
-	void deleteBall(auto& ball);
+	void deleteBall(auto& ball);	
 
 	//start animation function
 	void startAnimation();

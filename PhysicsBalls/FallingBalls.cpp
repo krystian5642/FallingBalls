@@ -80,6 +80,9 @@ void FallingBalls::updateDt()
 
 void FallingBalls::update()
 {
+    //it updates ball collisions , it changes their speed 
+    updateBallCollisions();
+
     //updateDt
     updateDt();
 
@@ -114,6 +117,33 @@ void FallingBalls::addBall(const Ball& newBall)
 void FallingBalls::deleteBall(auto& ball)
 {
     Balls.erase(ball);
+}
+
+void FallingBalls::updateBallCollisions()
+{
+    float distance;
+    float collisionDistance;
+    for (auto firstBall = Balls.begin(); firstBall != Balls.end(); firstBall++)
+    {
+        for (auto secondBall = firstBall + 1; secondBall != Balls.end(); secondBall++)
+        {
+            distance = sqrt(pow(firstBall->getPosition().x - secondBall->getPosition().x,2) 
+                + pow(firstBall->getPosition().y - secondBall->getPosition().y, 2));
+
+            sf::Vector2f Vd(firstBall->getPosition().x - secondBall->getPosition().x,
+                + firstBall->getPosition().y - secondBall->getPosition().y);
+
+            collisionDistance = firstBall->getRadius() + secondBall->getRadius();
+            sf::Vector2f Vr(Vd.x/distance * collisionDistance,Vd.y/distance * collisionDistance);
+
+            if (distance < collisionDistance)
+            {
+                sf::Vector2f correctionVector = Vr - Vd;
+                firstBall->move(correctionVector + sf::Vector2f(Vd.x / distance, Vd.y / distance));
+                setSpeedAfterCollision(firstBall, secondBall);
+            }
+        }
+    }
 }
 
 void FallingBalls::startAnimation()

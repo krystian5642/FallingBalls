@@ -62,6 +62,7 @@ public:
     float getHeight() const;
 
     const sf::Vector2f& getCurrentSpeedVector() const;
+    void setCurrentSpeedVector(sf::Vector2f& newCurrentSpeedVector);
 
     void setPosition(float x, float height, const sf::RectangleShape& ground,double gravity);
     void setPosition(const sf::Vector2f& position, const sf::RectangleShape& ground,double gravity);
@@ -75,9 +76,17 @@ public:
     void setPosition(float x, float y) = delete;
     void setPosition(const sf::Vector2f& position) = delete;
 
+    //friend functions
+    friend void setSpeedAfterCollision(std::vector<Ball>::iterator firstBall, std::vector<Ball>::iterator secondBall);
+  
 };
 
-
+template<class T,class sf::Vector2<T>> 
+T vectorLenght(const sf::Vector2<T>& Vector)
+{
+    T lenght = sqrt(pow(Vector.x,2) + pow(Vector.y,2));
+    return lenght;
+}
 
 #endif // !BALL_H
 
