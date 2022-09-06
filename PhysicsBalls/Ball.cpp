@@ -121,19 +121,33 @@ void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, d
 	height = windowSize.y - ground.getSize().y -getPosition().y;
 	currentSpeedVector = sf::Vector2f(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
 	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
-	float coefficientOfFriction = 0;
-	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y && currentSpeedVector.y > 0 
-		|| getPosition().y - getRadius() < 0 && currentSpeedVector.y < 0)
+
+	float coefficientOfFriction = 0.5;
+	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y && currentSpeedVector.y > 0)
+	{
+		currentSpeedVector.x = (1 - coefficientOfFriction) * currentSpeedVector.x;
+		currentSpeedVector.y = -(1 - coefficientOfFriction) * currentSpeedVector.y;
+		sf::CircleShape::setPosition(sf::Vector2f(getPosition().x, windowSize.y - ground.getSize().y-getRadius()));
+	}
+	if(getPosition().y - getRadius() < 0 && currentSpeedVector.y < 0)
 	{
 		currentSpeedVector.x = (1-coefficientOfFriction) * currentSpeedVector.x;
 		currentSpeedVector.y = -(1-coefficientOfFriction) * currentSpeedVector.y;
+		sf::CircleShape::setPosition(sf::Vector2f(getPosition().x, getRadius()));
 	}
-	if (getPosition().x + getRadius() > windowSize.x && currentSpeedVector.x > 0 
-		|| getPosition().x - getRadius() < 0 && currentSpeedVector.x < 0)
+	if (getPosition().x + getRadius() > windowSize.x && currentSpeedVector.x > 0)
 	{
 		currentSpeedVector.y = (1 - coefficientOfFriction) * currentSpeedVector.y;
 		currentSpeedVector.x = -(1 - coefficientOfFriction) * currentSpeedVector.x;
+		sf::CircleShape::setPosition(sf::Vector2f(windowSize.x - getRadius(), getPosition().y));
 	}
+	if (getPosition().x - getRadius() < 0 && currentSpeedVector.x < 0)
+	{
+		currentSpeedVector.y = (1 - coefficientOfFriction) * currentSpeedVector.y;
+		currentSpeedVector.x = -(1 - coefficientOfFriction) * currentSpeedVector.x;
+		sf::CircleShape::setPosition(sf::Vector2f(getRadius(), getPosition().y));
+	}
+
 	totalEnergy = 0;
     potentialEnergy = mass * gravity * height;	
 	kineticEnergy = mass * pow(currentSpeed, 2)/2;
@@ -159,8 +173,8 @@ void setSpeedAfterCollision(std::vector<Ball>::iterator firstBall, std::vector<B
 	//Theta is the movement angle
 	double sinTheta1 = firstBallCurrentSpeedVector.y / currentVelocity1;
 	double cosTheta1 = firstBallCurrentSpeedVector.x / currentVelocity1;
-	double sinTheta2 = secondBallCurrentSpeedVector.y / currentVelocity1;
-	double cosTheta2 = secondBallCurrentSpeedVector.x / currentVelocity1;
+	double sinTheta2 = secondBallCurrentSpeedVector.y / currentVelocity2;
+	double cosTheta2 = secondBallCurrentSpeedVector.x / currentVelocity2;
 
 	//The new Vx1 adn Vy1 and the new speedVector1
 	float vx1 = (currentVelocity1 * (cosTheta1 * cosPhi + sinTheta1 * sinPhi)
