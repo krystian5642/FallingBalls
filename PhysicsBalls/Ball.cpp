@@ -8,7 +8,7 @@ Ball::Ball(double radius, float mass, sf::Vector2f initialVelocity) : sf::Circle
 	this->volume = 4.f / 3.f * M_PI * pow(radius, 3);
 	this->density = this->mass / this->volume;
 	setOrigin(radius,radius);
-	currentSpeed = sqrt(pow(initialVelocity.x,2) + pow(initialVelocity.y, 2));
+	currentSpeed = vectorLenght(initialVelocity);
 	currentSpeedVector = initialVelocity;
 	kineticEnergy = mass * pow(currentSpeed, 2) / 2;
 	totalEnergy = kineticEnergy;
@@ -114,15 +114,14 @@ void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& g
 }
 
 //update function
-void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, double gravity)
+void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, double gravity,float coefficientOfFriction)
 {
 	//update energy , height and other thing
 	move(currentSpeedVector.x*dt, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
 	height = windowSize.y - ground.getSize().y -getPosition().y;
 	currentSpeedVector = sf::Vector2f(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);
-	currentSpeed = sqrt(pow(currentSpeedVector.x, 2) + pow(currentSpeedVector.y, 2));
+	currentSpeed = vectorLenght(currentSpeedVector);
 
-	float coefficientOfFriction = 0.5;
 	if (getPosition().y + getRadius() > windowSize.y - ground.getSize().y && currentSpeedVector.y > 0)
 	{
 		currentSpeedVector.x = (1 - coefficientOfFriction) * currentSpeedVector.x;
@@ -167,8 +166,8 @@ void setSpeedAfterCollision(std::vector<Ball>::iterator firstBall, std::vector<B
 	const sf::Vector2f firstBallCurrentSpeedVector = firstBall->getCurrentSpeedVector();
 	const sf::Vector2f secondBallCurrentSpeedVector = secondBall->getCurrentSpeedVector();
 
-	float currentVelocity1 = sqrt(pow(firstBallCurrentSpeedVector.x,2) + pow(firstBallCurrentSpeedVector.y, 2));
-    float currentVelocity2 = sqrt(pow(secondBallCurrentSpeedVector.x, 2) + pow(secondBallCurrentSpeedVector.y, 2));
+	float currentVelocity1 = vectorLenght(firstBallCurrentSpeedVector);
+	float currentVelocity2 = vectorLenght(secondBallCurrentSpeedVector);
 
 	//Theta is the movement angle
 	double sinTheta1 = firstBallCurrentSpeedVector.y / currentVelocity1;

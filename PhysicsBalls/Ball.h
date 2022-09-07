@@ -70,7 +70,8 @@ public:
     //update function
     void updateFallingBall(long double dt,
         const sf::RectangleShape& ground, 
-        double gravity = 9.81);
+        double gravity,
+        float coefficientOfFriction);
 
     //These functions are deleted because we set the position above the ground and potential energy changes, too
     void setPosition(float x, float y) = delete;
@@ -81,7 +82,7 @@ public:
   
 };
 
-template<class T,class sf::Vector2<T>> 
+template<class T> 
 T vectorLenght(const sf::Vector2<T>& Vector)
 {
     T lenght = sqrt(pow(Vector.x,2) + pow(Vector.y,2));

@@ -13,6 +13,7 @@ private:
 	sf::Event event;
 	double gravity;
 	long double dt;
+	float coefficientOfFriction;
 	std::vector<Ball> Balls;
 
 	//functions
@@ -27,6 +28,9 @@ public:
 	//getters and setters
 	double getGravity() const;
 	void setGravity(double newGravity);
+
+	float getCoefficientOfFriction() const; 
+	void setCoefficientOfFriction(float newCoefficientOfFriction);
 
 	size_t getBallNumber() const;
 

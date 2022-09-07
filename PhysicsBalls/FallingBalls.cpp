@@ -38,7 +38,6 @@ void FallingBalls::initGround()
 FallingBalls::FallingBalls(double gravity)
 {
     initWindow();
-    //it sets deafult ground
     initGround();
     updateDt();
     setGravity(gravity);   
@@ -58,9 +57,19 @@ void FallingBalls::setGravity(double newGravity)
 	gravity = newGravity;
 }
 
+float FallingBalls::getCoefficientOfFriction() const
+{
+    return coefficientOfFriction;
+}
+
+void FallingBalls::setCoefficientOfFriction(float newCoefficientOfFriction)
+{
+    coefficientOfFriction = newCoefficientOfFriction;
+}
+
 size_t FallingBalls::getBallNumber() const
 {
-    return 0;
+    return Balls.size();
 }
 
 const sf::RectangleShape& FallingBalls::getGround() const
@@ -89,7 +98,7 @@ void FallingBalls::update()
     //update balls
     for (auto& ball : Balls)
     {
-        ball.updateFallingBall(dt,ground,gravity);
+        ball.updateFallingBall(dt,ground,gravity,coefficientOfFriction);
     }
 }
 
@@ -127,8 +136,8 @@ void FallingBalls::updateBallCollisions()
     {
         for (auto secondBall = firstBall + 1; secondBall != Balls.end(); secondBall++)
         {
-            distance = sqrt(pow(firstBall->getPosition().x - secondBall->getPosition().x,2) 
-                + pow(firstBall->getPosition().y - secondBall->getPosition().y, 2));
+            distance = vectorLenght(sf::Vector2f(firstBall->getPosition().x - secondBall->getPosition().x,
+                  firstBall->getPosition().y - secondBall->getPosition().y));
 
             sf::Vector2f Vd(firstBall->getPosition().x - secondBall->getPosition().x,
                 + firstBall->getPosition().y - secondBall->getPosition().y);
@@ -138,8 +147,8 @@ void FallingBalls::updateBallCollisions()
 
             if (distance < collisionDistance)
             {
-                sf::Vector2f correctionVector = Vr - Vd;
-                firstBall->move(correctionVector + sf::Vector2f(Vd.x / distance, Vd.y / distance));
+                sf::Vector2f correctionVector = Vr - Vd + sf::Vector2f(Vd.x / distance, Vd.y / distance);
+                firstBall->move(correctionVector);
                 setSpeedAfterCollision(firstBall, secondBall);
             }
         }
