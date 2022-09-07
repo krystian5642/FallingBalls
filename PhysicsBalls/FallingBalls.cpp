@@ -41,6 +41,7 @@ FallingBalls::FallingBalls(double gravity)
     initGround();
     updateDt();
     setGravity(gravity);   
+    setCoefficientOfFriction(0);
 }
 
 FallingBalls::~FallingBalls()
@@ -64,6 +65,10 @@ float FallingBalls::getCoefficientOfFriction() const
 
 void FallingBalls::setCoefficientOfFriction(float newCoefficientOfFriction)
 {
+    if (newCoefficientOfFriction < 0 || newCoefficientOfFriction > 1)
+    {
+        throw std::logic_error("newCoefficientOfFriction cannot be less than 0 and greater than 1");
+    }
     coefficientOfFriction = newCoefficientOfFriction;
 }
 
