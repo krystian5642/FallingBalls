@@ -1,18 +1,7 @@
 #ifndef BALL_H
 #define BALL_H
 
-#include <iostream>
-#include <fstream>
-#include <memory>
-#include <cstdlib>
-#include <ctime>
-
-#define _USE_MATH_DEFINES
-#include <math.h>
-
-#include <SFML/Window.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include "VectorArrow.h"
 
 class Ball : public sf::CircleShape
 {

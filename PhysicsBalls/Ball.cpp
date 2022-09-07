@@ -116,7 +116,7 @@ void Ball::setPosition(const sf::Vector2f& position, const sf::RectangleShape& g
 //update function
 void Ball::updateFallingBall(long double dt, const sf::RectangleShape& ground, double gravity,float coefficientOfFriction)
 {
-	//update energy , height and other thing
+	//update energy , height and other things
 	move(currentSpeedVector.x*dt, currentSpeedVector.y * dt + gravity * pow<long double>(dt, 2) / 2);
 	height = windowSize.y - ground.getSize().y -getPosition().y;
 	currentSpeedVector = sf::Vector2f(currentSpeedVector.x, currentSpeedVector.y + gravity * dt);

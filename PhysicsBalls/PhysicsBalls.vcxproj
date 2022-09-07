@@ -154,10 +154,12 @@
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="FallingBalls.cpp" />
     <ClCompile Include="PhysicsBalls.cpp" />
+    <ClCompile Include="VectorArrow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
     <ClInclude Include="FallingBalls.h" />
+    <ClInclude Include="VectorArrow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
