@@ -12,7 +12,6 @@ int main()
             ball.setFillColor(sf::Color::Green);
             animationBalls.addBall(ball);
         }
-        animationBalls.setCoefficientOfFriction(0.9);
         animationBalls.startAnimation();
     }
     catch (std::exception& error)

@@ -1,11 +1,12 @@
 #include "Ball.h"
+#define M_PI 3.141592653589
 
 extern sf::Vector2u windowSize;
 
 Ball::Ball(double radius, float mass, sf::Vector2f initialVelocity) : sf::CircleShape(radius)
 {
 	this->mass = mass;
-	this->volume = 4.f / 3.f * M_PI * pow(radius, 3);
+	this->volume = 4.f / 3.f *M_PI * pow(radius, 3);
 	this->density = this->mass / this->volume;
 	setOrigin(radius,radius);
 	currentSpeed = vectorLenght(initialVelocity);
